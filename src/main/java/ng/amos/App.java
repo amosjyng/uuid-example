@@ -27,13 +27,19 @@ public class App {
         runtime.waitUntilStarted();
 
         try (Transaction tx = neo4jdb.beginTx()) {
-            Iterable<IndexDefinition> indices = neo4jdb.schema().getIndexes();
-            if (indices.iterator().hasNext()) {
-                for (IndexDefinition index : indices) {
-                    System.err.println(index.getLabel());
-                }
-            } else {
+            neo4jdb.createNode();
+            tx.success();
+        }
+
+        try (Transaction tx = neo4jdb.beginTx()) {
+            String[] indices = neo4jdb.index().nodeIndexNames();
+
+            if (indices.length == 0) {
                 System.err.println("There are no indices! Shouldn't there be a uuidIndex?");
+            }
+
+            for (String index : indices) {
+                    System.err.println(index);
             }
         }
 
